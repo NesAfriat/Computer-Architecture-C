@@ -1,0 +1,21 @@
+all: exec
+
+libs: asm-lib 
+
+asm-lib: start.s
+	# flags meanings:
+	# -g = debug symbolx
+	# -f elf = output format (ELF 32 bit)
+	# -o add.o = write assembled file to add.o
+	nasm -g -f elf32 start.s -o start.o
+
+
+exec: task2c.c libs
+	gcc -m32 -Wall -ansi -c -nostdlib -fno-stack-protector task2c.c -o task2c.o
+	gcc -m32 -Wall -ansi -c -nostdlib -fno-stack-protector util.c -o util.o
+	ld -m elf_i386 start.o task2c.o util.o -o flame2
+	rm task2c.o start.o util.o
+
+.PHONY: clean
+clean:
+	rm -rf ./*.o flame2
